@@ -1,27 +1,30 @@
 <?php
-//Give the name of the program here
-//Include your name and the date here
-//Give a brief description of what the program does
 $servername = "localhost";
 $username = "root";
 $password = "pass";
 $dbname = "tennisclub";
 $port = 3306;
 
-//set the default timezone - this is necessary since MySQL 8. This is an effort to store all dates and times together with their timezones. 
-//This is particularly important where there is a timestamp indicating when something happened.
-date_default_timezone_set('Europe/Dublin');
+$conn = new mysqli($servername, $username, $password, $dbname, $port);
 
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $dbname, $port);
-// Check connection
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
 }
 
-$sql = "INSERT INTO member (firstname, surname) VALUES ('john', 'doe')";
+if (!isset($_POST['firstname']) || !isset($_POST['surname'])) {
+    die("First name and surname must be provided.");
+}
 
-mysqli_query($conn, $sql);
+$firstname = $_POST['firstname'];
+$surname   = $_POST['surname'];
 
-mysqli_close($conn);
+$sql = "INSERT INTO Member (firstname, surname) VALUES ('$firstname', '$surname')";
+
+if ($conn->query($sql) === TRUE) {
+    echo "New member added successfully!";
+} else {
+    echo "Error: " . $sql . "<br>" . $conn->error;
+}
+
+$conn->close();
 ?>
